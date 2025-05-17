@@ -196,11 +196,47 @@ public class Level {
 	//#############################################################################################################
 	//Your code goes here! 
 	//Please make sure you read the rubric/directions carefully and implement the solution recursively!
+
+	//Precondition: flower on map touched by player
+	//Postcondition: water spreads to all availble locations
 	private void water(int col, int row, Map map, int fullness) {
-		
-	}
+	Water w;
+    String waterImage;
+    
+    if (fullness == 0) {
+        waterImage = "Falling_water";
+    } else if (fullness == 1) {
+        waterImage = "Quarter_water";
+    } else if (fullness == 2) {
+        waterImage = "Half_water";
+    } else {
+        waterImage = "Full_water";
+    }
 
+    w = new Water(col, row, tileSize, tileset.getImage(waterImage), this, fullness);
+	map.addTile(col, row, w);
 
+                //check if we can go down, if yes make water go down and recursively run again
+				if (row + 1< map.getTiles()[0].length && !(map.getTiles()[col][row+1] instanceof Water) && !map.getTiles()[col][row+1].isSolid()){
+				water(col, row + 1, map, 0);
+				 }
+				//if we can’t go down go, left and/or right.
+				 else if (fullness > 0) {
+       			 int newFullness = (fullness == 3) ? 2 : 1; // reduce fullness when spreading
+        // right
+       			 if (col+1 < map.getTiles().length && 
+         		  	 !(map.getTiles()[col+1][row] instanceof Water) && 
+          		 	 !map.getTiles()[col+1][row].isSolid()) {
+           		 water(col+1, row, map, newFullness);
+      			  }
+        //  left
+      			  if (col-1 >= 0 && 
+          			  !(map.getTiles()[col-1][row] instanceof Water) && 
+          			  !map.getTiles()[col-1][row].isSolid()) {
+          			  water(col-1, row, map, newFullness);
+        }
+    }
+}
 
 	public void draw(Graphics g) {
 		g.translate((int) -camera.getX(), (int) -camera.getY());
